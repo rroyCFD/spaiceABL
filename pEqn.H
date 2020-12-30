@@ -10,6 +10,8 @@
     // In the equations it is always multiplied with inv(A).  This is HbyA.
     volVectorField HbyA(constrainHbyA(rAU*UEqn.H(), U, p_rgh));
 
+    // Clear memory
+    tUEqn.clear();
     // This is the Boussinesq buoyancy term multipled by the inverse of the A operator.
     Boussinesq.updateBuoyancyTerm();
     surfaceScalarField phig(rAUf * Boussinesq.buoyancyTerm() * mesh.magSf());
