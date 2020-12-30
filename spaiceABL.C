@@ -50,6 +50,7 @@ Description
 #include "ABL.H"
 #include "defineBlendingFunction.H" // for divergence scheme blending
 
+#include "spaeceControl.H"
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 int main(int argc, char *argv[])
@@ -69,9 +70,13 @@ int main(int argc, char *argv[])
 
     turbulence->validate();
 
-    // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+    // Create solution control object
+    spaeceControl spaice(mesh, "SPAiCE");
+    Info << spaice.algorithmName() << endl;
+    Info << "consistent: " << spaice.consistent() << endl;
 
-    Info << endl << "Starting time loop" << endl;
+    // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+    Info << nl << "Starting time loop" << endl;
 
     // Update boundary conditions before starting in case anything needs
     // updating, for example after using mapFields to interpolate initial
@@ -82,48 +87,34 @@ int main(int argc, char *argv[])
     T.correctBoundaryConditions();
 
     // Time stepping loop.
-    while (runTime.run())
+    while (runTime.loop())
     {
         #include "readTimeControls.H"
         #include "CourantNo.H"
         #include "setDeltaT.H"
         #include "updateDivSchemeBlendingField.H"
 
-        runTime++;
-
         Info << "Time = " << runTime.timeName() << tab;
         Info << "Time Step = " << runTime.timeIndex() << endl;
 
-        // Outer-iteration loop.
-        while (pimple.loop())
+        #include "extrapolateFields.H"
+
+        // Update the source terms.
+        momentumSourceTerm.update(spaice.finalSPAeCEIter());
+        temperatureSourceTerm.update(spaice.finalSPAeCEIter());
+
+        // --- momentum prediction, pressure correction loop
+        while (spaice.correct())
         {
-            // Update the source terms.
-            momentumSourceTerm.update(pimple.finalPimpleIter());
-            temperatureSourceTerm.update(pimple.finalPimpleIter());
-
-            // Predictor step.
-            Info << "   Predictor" << endl;
-
             #include "UEqn.H"
-            #include "turbulenceCorrect.H"
+            #include "pEqn.H"
             #include "TEqn.H"
-
-            // Corrector steps.
-            int corrIter = 1;
-            while (pimple.correct())
-            {
-                Info << "   Corrector Step " << corrIter << endl;
-
-                #include "pEqn.H"
-                #include "turbulenceCorrect.H"
-                #include "TEqn.H"
-
-                corrIter++;
-            }
-
-            // Compute the continuity errors.
-            #include "computeDivergence.H"
         }
+        
+        #include "turbulenceCorrect.H"
+
+        // Compute the continuity errors.
+        #include "computeDivergence.H"
 
         // Update timeVaryingMappedInletOutlet parameters
         #include "updateFixesValue.H"
