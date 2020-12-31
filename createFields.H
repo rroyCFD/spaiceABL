@@ -201,3 +201,6 @@ mesh.setFluxRequired(p_rgh.name());
 
 // Allows the user to set fvOptions, such as additional source terms.
 #include "createFvOptions.H"
+
+// Extrapolation coefficient (default 0.5)
+scalar extrapCoeff(0.5);

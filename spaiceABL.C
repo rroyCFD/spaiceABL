@@ -94,6 +94,8 @@ int main(int argc, char *argv[])
         Info << "Time = " << runTime.timeName() << tab;
         Info << "Time Step = " << runTime.timeIndex() << endl;
 
+        #include "extrapolateFields.H"
+        
         // Outer-iteration loop.
         while (pimple.loop())
         {
