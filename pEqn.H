@@ -9,6 +9,7 @@
     // The momentum equation "H" operator is the off-diagonal times the last known U.
     // In the equations it is always multiplied with inv(A).  This is HbyA.
     volVectorField HbyA(constrainHbyA(rAU*UEqn.H(), U, p_rgh));
+    tUEqn.clear();
 
     // This is the Boussinesq buoyancy term multipled by the inverse of the A operator.
     Boussinesq.updateBuoyancyTerm();
@@ -26,30 +27,31 @@
     // applies the correction indirectly by setting the pressure gradient to be used in
     // the fixedFluxPressure boundary condition on p_rgh, or directly if the zeroGradient
     // boundary condition on p_rgh is used.
-    surfaceScalarField phiFixedFlux = phiHbyA;
-
-    adjustPhi(phiFixedFlux, U, p_rgh);
-
-    forAll(p_rgh.boundaryField(), patchi)
     {
-        if (isA<zeroGradientFvPatchScalarField>(p_rgh.boundaryField()[patchi]))
+        surfaceScalarField phiFixedFlux = phiHbyA;
+
+        adjustPhi(phiFixedFlux, U, p_rgh);
+
+        forAll(p_rgh.boundaryField(), patchi)
         {
-            phiHbyA.boundaryFieldRef()[patchi] = phiFixedFlux.boundaryField()[patchi];
+            if (isA<zeroGradientFvPatchScalarField>(p_rgh.boundaryField()[patchi]))
+            {
+                phiHbyA.boundaryFieldRef()[patchi] = phiFixedFlux.boundaryField()[patchi];
+            }
         }
-    }
 
-    phiHbyA += phig;
+        phiHbyA += phig;
 
-    // Update the fixedFluxPressure BCs to ensure flux consistency
-    setSnGrad<fixedFluxPressureFvPatchScalarField>
-    (
-        p_rgh.boundaryFieldRef(),
+        // Update the fixedFluxPressure BCs to ensure flux consistency
+        setSnGrad<fixedFluxPressureFvPatchScalarField>
         (
-            phiHbyA.boundaryField()
-          - phiFixedFlux.boundaryField()
-        )/(mesh.magSf().boundaryField()*rAUf.boundaryField())
-    );
-
+            p_rgh.boundaryFieldRef(),
+            (
+                phiHbyA.boundaryField()
+              - phiFixedFlux.boundaryField()
+            )/(mesh.magSf().boundaryField()*rAUf.boundaryField())
+        );
+    }
 
 
     
