@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
 
     // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-    Info << endl << "Starting time loop" << endl;
+    Info << nl << "Starting time loop" << endl;
 
     // Update boundary conditions before starting in case anything needs
     // updating, for example after using mapFields to interpolate initial
@@ -101,7 +101,7 @@ int main(int argc, char *argv[])
             momentumSourceTerm.update(pimple.finalPimpleIter());
             temperatureSourceTerm.update(pimple.finalPimpleIter());
 
-            // Predictor step.
+            /*// Predictor step.
             Info << "   Predictor" << endl;
 
             #include "UEqn.H"
@@ -119,7 +119,15 @@ int main(int argc, char *argv[])
                 #include "TEqn.H"
 
                 corrIter++;
+            }*/
+            while (pimple.correct())
+            {
+                #include "UEqn.H"
+                #include "pEqn.H"
+                #include "TEqn.H"
             }
+
+            #include "turbulenceCorrect.H"
 
             // Compute the continuity errors.
             #include "computeDivergence.H"

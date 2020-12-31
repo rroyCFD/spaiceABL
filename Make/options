@@ -25,5 +25,6 @@ EXE_LIBS = \
     -lmeshTools \
     -lSOWFAboundaryConditions \
     -lSOWFAABLForcing \
-    -lSOWFAmeshTools
+    -lSOWFAmeshTools \
+    -L$(FOAM_USER_LIBBIN)
 
