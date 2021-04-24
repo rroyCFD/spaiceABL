@@ -30,7 +30,6 @@ volScalarField T
     mesh
 );
 
-
 // Create and read the modified pressure field [m^2/s^2].
 Info << "Creating and reading the density-normalized modified pressure field, p_rgh" << endl;
 volScalarField p_rgh
@@ -46,6 +45,18 @@ volScalarField p_rgh
     mesh
 );
 
+bool extrapolP_rgh_BC = true;
+{
+    const wordList p_rghPatchTypes = p_rgh.boundaryField().types();
+    forAll(p_rghPatchTypes, patchI)
+    {
+        if(p_rghPatchTypes[patchI] == "fixedFluxPressure")
+        {
+           extrapolP_rgh_BC = false;
+        }
+    }
+    Info << "extrapolate p_rgh boundaries? " << extrapolP_rgh_BC << endl;
+}
 
 // Create and read the velocity field [m/s].
 Info << "Creating and reading velocity field, U" << endl;
