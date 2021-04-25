@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
     U.correctBoundaryConditions();
     phi = linearInterpolate(U) & mesh.Sf();
     #include "turbulenceCorrect.H"
-    T.correctBoundaryConditions();
+    // T.correctBoundaryConditions();
 
     // Time stepping loop.
     while (runTime.run())
@@ -95,13 +95,13 @@ int main(int argc, char *argv[])
         Info << "Time Step = " << runTime.timeIndex() << endl;
 
         #include "extrapolateFields.H"
-        
+
         // Outer-iteration loop.
         while (pimple.loop())
         {
             // Update the source terms.
             momentumSourceTerm.update(pimple.finalPimpleIter());
-            temperatureSourceTerm.update(pimple.finalPimpleIter());
+            // temperatureSourceTerm.update(pimple.finalPimpleIter());
 
             /*// Predictor step.
             Info << "   Predictor" << endl;
@@ -126,7 +126,7 @@ int main(int argc, char *argv[])
             {
                 #include "UEqn.H"
                 #include "pEqn.H"
-                #include "TEqn.H"
+                // #include "TEqn.H"
             }
 
             #include "turbulenceCorrect.H"

@@ -20,5 +20,5 @@ phi = ((1 + extrapCoeff) * phi.oldTime() - extrapCoeff * phi.oldTime().oldTime()
 U = ((1 + extrapCoeff) * U.oldTime() - extrapCoeff * U.oldTime().oldTime());
 // U.correctBoundaryConditions(); updated at UEqn matrix formation
 
-T = ((1 + extrapCoeff) * T.oldTime() - extrapCoeff * T.oldTime().oldTime());
-T.correctBoundaryConditions();
+// T = ((1 + extrapCoeff) * T.oldTime() - extrapCoeff * T.oldTime().oldTime());
+// T.correctBoundaryConditions();

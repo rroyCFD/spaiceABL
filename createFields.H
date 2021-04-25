@@ -16,19 +16,19 @@ bool updateFixesValue(ABLProperties.lookupOrDefault<bool>("updateFixesValue",fal
 
 
 // Create and read the potential temperature field [K].
-Info << "Creating and reading potential temperature field, T" << endl;
-volScalarField T
-(
-    IOobject
-    (
-        "T",
-        runTime.timeName(),
-        mesh,
-        IOobject::MUST_READ,
-        IOobject::AUTO_WRITE
-    ),
-    mesh
-);
+//Info << "Creating and reading potential temperature field, T" << endl;
+//volScalarField T
+//(
+//    IOobject
+//    (
+//        "T",
+//        runTime.timeName(),
+//        mesh,
+//        IOobject::MUST_READ,
+//        IOobject::AUTO_WRITE
+//    ),
+//    mesh
+//);
 
 // Create and read the modified pressure field [m^2/s^2].
 Info << "Creating and reading the density-normalized modified pressure field, p_rgh" << endl;
@@ -46,7 +46,7 @@ volScalarField p_rgh
 );
 
 bool extrapolP_rgh_BC = true;
-{
+/*{
     const wordList p_rghPatchTypes = p_rgh.boundaryField().types();
     forAll(p_rghPatchTypes, patchI)
     {
@@ -56,7 +56,18 @@ bool extrapolP_rgh_BC = true;
         }
     }
     Info << "extrapolate p_rgh boundaries? " << extrapolP_rgh_BC << endl;
+}*/
+
+// volScalarField::Boundary& bp_rgh = p_rgh.boundaryField();
+forAll(p_rgh.boundaryField(), patchI)
+{
+    const fvPatchScalarField& p_rghPatch = p_rgh.boundaryField()[patchI];
+    if (isA<fixedFluxPressureFvPatchScalarField>(p_rghPatch))
+    {
+        extrapolP_rgh_BC = false;
+    }
 }
+
 
 // Create and read the velocity field [m/s].
 Info << "Creating and reading velocity field, U" << endl;
@@ -87,7 +98,7 @@ singlePhaseTransportModel laminarTransport(U, phi);
 // Read in reference temperature [K] and laminar and turblent Prandtl numbers.
 // Note that turbulent Prandtl number may be overriden by a stability-
 // dependent value based on the choice of SGS turbulence model.
-dimensionedScalar TRef("TRef", dimTemperature, laminarTransport);
+//dimensionedScalar TRef("TRef", dimTemperature, laminarTransport);
 dimensionedScalar Pr("Pr", dimless, laminarTransport);
 dimensionedScalar Prt("Prt", dimless, laminarTransport);
 
@@ -101,30 +112,31 @@ autoPtr<incompressible::turbulenceModel> turbulence
 
 
 // Create Coriolis force object [m/s^2].
-Info << "Creating Coriolis force" << endl;
-CoriolisForce Coriolis(U);
+// Info << "Creating Coriolis force" << endl;
+// CoriolisForce Coriolis(U);
 
 
 // Create external source term objects [m/s^2 and K/s].
-Info << "Creating and reading volumetric source terms for momentum and temperature" << endl;
+// Info << "Creating and reading volumetric source terms for momentum and temperature" << endl;
+Info << "Creating and reading volumetric source terms for momentum" << endl;
 drivingForce<vector> momentumSourceTerm(ABLProperties, "momentum",U);
-drivingForce<scalar> temperatureSourceTerm(ABLProperties, "temperature",T);
+//drivingForce<scalar> temperatureSourceTerm(ABLProperties, "temperature",T);
 
 
 // Create and read the kinematic turbulent thermal conductivity [m2/s].
-Info << "Creating and reading turbulent thermal conductivity field, kappat" << endl;
-volScalarField kappat
-(
-    IOobject
-    (
-        "kappat",
-        runTime.timeName(),
-        mesh,
-        IOobject::MUST_READ,
-        IOobject::AUTO_WRITE
-    ),
-    mesh
-);
+//Info << "Creating and reading turbulent thermal conductivity field, kappat" << endl;
+//volScalarField kappat
+//(
+//    IOobject
+//    (
+//        "kappat",
+//        runTime.timeName(),
+//        mesh,
+//        IOobject::MUST_READ,
+//        IOobject::AUTO_WRITE
+//    ),
+//    mesh
+//);
 
 
 // Create and read the wall shear stress field [m^2/s^2].
@@ -144,19 +156,19 @@ volSymmTensorField Rwall
 
 
 // Create and read the wall temperature flux field [K-m/s].
-Info << "Creating and reading the wall temperature flux field, qwall" << endl;
-volVectorField qwall
-(
-    IOobject
-    (
-        "qwall",
-        runTime.timeName(),
-        mesh,
-        IOobject::MUST_READ,
-        IOobject::AUTO_WRITE
-    ),
-    mesh
-);
+//Info << "Creating and reading the wall temperature flux field, qwall" << endl;
+//volVectorField qwall
+//(
+//    IOobject
+//    (
+//        "qwall",
+//        runTime.timeName(),
+//        mesh,
+//        IOobject::MUST_READ,
+//        IOobject::AUTO_WRITE
+//    ),
+//    mesh
+//);
 
 
 // Create and read the density-normalied pressure field [m^2/s^2].
@@ -187,7 +199,7 @@ bool p_rghNeedRef = setRefCell (p, p_rgh, pimple.dict(), pRefCell, pRefValue );
 
 // Create buoyancy model, which requires a reference height, which is the height of
 // the pressure reference cell.
-Info << "Creating the Boussinesq buoyancy model" << endl;
+// Info << "Creating the Boussinesq buoyancy model" << endl;
 vector hRef_ = vector::zero;
 if (pRefCell != -1)
 {
@@ -195,8 +207,33 @@ if (pRefCell != -1)
 }
 reduce(hRef_,sumOp<vector>());
 dimensionedVector hRef("hRef",dimLength,hRef_);
-    
-buoyancyModel Boussinesq(T, TRef, hRef);
+
+
+const uniformDimensionedVectorField g
+(
+    IOobject
+    (
+        "g",
+        runTime.constant(),
+        mesh,
+        IOobject::MUST_READ,
+        IOobject::NO_WRITE
+    )
+);
+
+ volScalarField gh
+ (
+    IOobject
+    (
+        "p",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::NO_WRITE
+    ),
+    (g & (mesh.C() - hRef))
+);
+// buoyancyModel Boussinesq(T, TRef, hRef);
 
 
 // Adjust the background pressure level to agree with the reference pressure specified

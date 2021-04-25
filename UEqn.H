@@ -1,34 +1,34 @@
     // Solve the momentum equation
-    
+
     // Update Coriolis forcing
-    Coriolis.update();
+    // Coriolis.update();
 
     // Update buoyancy term
-    Boussinesq.updateBuoyancyTerm();
+    // Boussinesq.updateBuoyancyTerm();
 
     tmp<fvVectorMatrix> tUEqn
     (
-        fvm::ddt(U) 
+        fvm::ddt(U)
       // + fvm::div(phi, U)
       + 0.5*(
-              fvm::div(phi,U) 
+              fvm::div(phi,U)
             + fvc::div(phi.oldTime(), U.oldTime(), "div(phi,U)")
-        ) 
+        )
       // + turbulence->divDevReff(U)
       - 0.5*(
             // written for eddy viscosity as it's easy to split
-              fvm::laplacian(turbulence->nuEff(), U) 
+              fvm::laplacian(turbulence->nuEff(), U)
             + fvc::laplacian(turbulence->nuEff(), U.oldTime())
         )
       - fvc::div(turbulence->nuEff() * dev2((fvc::grad(U))().T()) )
       + fvc::div(Rwall)
       - momentumSourceTerm.force()
-      - Coriolis.force()
+      // - Coriolis.force()
      ==
         fvOptions(U)
     );
     fvVectorMatrix& UEqn = tUEqn.ref();
-    
+
     UEqn.relax();
 
     fvOptions.constrain(UEqn);
@@ -43,7 +43,7 @@
             (
                 (
                   - fvc::snGrad(p_rgh)
-                  + Boussinesq.buoyancyTerm()
+                  // + Boussinesq.buoyancyTerm()
                 )*mesh.magSf()
             )
         );
