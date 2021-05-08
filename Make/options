@@ -10,7 +10,8 @@ EXE_INC = \
     -I$(LIB_SRC)/finiteVolume/lnInclude \
     -I$(SOWFA_DIR)/src/ABLForcing/lnInclude \
     -I$(SOWFA_DIR)/src/meshTools/lnInclude \
-    -I$(SOWFA_DIR)/src/boundaryConditions/lnInclude
+    -I$(SOWFA_DIR)/src/boundaryConditions/lnInclude \
+    -I$(WM_PROJECT_USER_DIR)/src/ABLForcing/lnInclude \
 
 
 EXE_LIBS = \
@@ -26,5 +27,6 @@ EXE_LIBS = \
     -lSOWFAboundaryConditions \
     -lSOWFAABLForcing \
     -lSOWFAmeshTools \
-    -L$(FOAM_USER_LIBBIN)
+    -L$(FOAM_USER_LIBBIN) \
+    -lABLForcing
 

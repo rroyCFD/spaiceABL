@@ -50,6 +50,8 @@ Description
 #include "ABL.H"
 #include "defineBlendingFunction.H" // for divergence scheme blending
 
+#include "drivingForceMod.H"
+
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 int main(int argc, char *argv[])
@@ -100,7 +102,7 @@ int main(int argc, char *argv[])
         while (pimple.loop())
         {
             // Update the source terms.
-            momentumSourceTerm.update(pimple.finalPimpleIter());
+            // momentumSourceTerm.update(pimple.finalPimpleIter());
             // temperatureSourceTerm.update(pimple.finalPimpleIter());
 
             /*// Predictor step.
@@ -124,7 +126,10 @@ int main(int argc, char *argv[])
             }*/
             while (pimple.correct())
             {
+                // Update the source terms.
+                momentumSourceTerm.update(pimple.finalPimpleIter());
                 #include "UEqn.H"
+
                 #include "pEqn.H"
                 // #include "TEqn.H"
             }

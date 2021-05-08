@@ -119,7 +119,7 @@ autoPtr<incompressible::turbulenceModel> turbulence
 // Create external source term objects [m/s^2 and K/s].
 // Info << "Creating and reading volumetric source terms for momentum and temperature" << endl;
 Info << "Creating and reading volumetric source terms for momentum" << endl;
-drivingForce<vector> momentumSourceTerm(ABLProperties, "momentum",U);
+drivingForceMod<vector> momentumSourceTerm(ABLProperties, "momentum",U);
 //drivingForce<scalar> temperatureSourceTerm(ABLProperties, "temperature",T);
 
 
