@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
     U.correctBoundaryConditions();
     phi = linearInterpolate(U) & mesh.Sf();
     #include "turbulenceCorrect.H"
-    // T.correctBoundaryConditions();
+    T.correctBoundaryConditions();
 
     // Time stepping loop.
     while (runTime.run())
@@ -138,7 +138,7 @@ int main(int argc, char *argv[])
                 phi += dt * (momentumSourceTerm.bodyForceAdjustMent() & mesh.Sf());
 
                 #include "pEqn.H"
-                // #include "TEqn.H"
+                #include "TEqn.H"
             }
 
             #include "turbulenceCorrect.H"
