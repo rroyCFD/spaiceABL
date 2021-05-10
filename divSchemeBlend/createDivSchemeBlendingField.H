@@ -14,6 +14,8 @@
         1.0
     );
 
+    surfaceScalarField& U_0BlendingFactor (UBlendingFactor);
+
     Info << "Creating divergence scheme blending factor field, TBlendingFactor" << endl;
     surfaceScalarField TBlendingFactor
     (
@@ -29,6 +31,8 @@
         1.0
     );
 
+    surfaceScalarField& T_0BlendingFactor(TBlendingFactor);
+
 
     // Read blending information.
     //
@@ -38,7 +42,7 @@
     List<List<scalar> > profileTable(schemeBlendDict.lookup("faceSizeBlendingTable"));
     scalarField faceAreaList(profileTable.size(),0.0);
     scalarField UBlendingList(profileTable.size(),0.0);
-    scalarField TBlendingList(profileTable.size(),0.0);    
+    scalarField TBlendingList(profileTable.size(),0.0);
 
     forAll(faceAreaList,i)
     {
@@ -62,7 +66,7 @@
     // Create the old value of these quantities for checking for updated files.
     List<List<scalar> > profileTableOld = profileTable;
 
-    scalar  zBlending1Old, zBlending2Old, 
+    scalar  zBlending1Old, zBlending2Old,
             blendingFactorUz1Old, blendingFactorUz2Old,
             blendingFactorTz1Old,  blendingFactorTz2Old,
             useWallDistZOld;
