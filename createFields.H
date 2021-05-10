@@ -16,19 +16,19 @@ bool updateFixesValue(ABLProperties.lookupOrDefault<bool>("updateFixesValue",fal
 
 
 // Create and read the potential temperature field [K].
-//Info << "Creating and reading potential temperature field, T" << endl;
-//volScalarField T
-//(
-//    IOobject
-//    (
-//        "T",
-//        runTime.timeName(),
-//        mesh,
-//        IOobject::MUST_READ,
-//        IOobject::AUTO_WRITE
-//    ),
-//    mesh
-//);
+Info << "Creating and reading potential temperature field, T" << endl;
+volScalarField T
+(
+   IOobject
+   (
+       "T",
+       runTime.timeName(),
+       mesh,
+       IOobject::MUST_READ,
+       IOobject::AUTO_WRITE
+   ),
+   mesh
+);
 
 // Create and read the modified pressure field [m^2/s^2].
 Info << "Creating and reading the density-normalized modified pressure field, p_rgh" << endl;
@@ -98,7 +98,7 @@ singlePhaseTransportModel laminarTransport(U, phi);
 // Read in reference temperature [K] and laminar and turblent Prandtl numbers.
 // Note that turbulent Prandtl number may be overriden by a stability-
 // dependent value based on the choice of SGS turbulence model.
-//dimensionedScalar TRef("TRef", dimTemperature, laminarTransport);
+dimensionedScalar TRef("TRef", dimTemperature, laminarTransport);
 dimensionedScalar Pr("Pr", dimless, laminarTransport);
 dimensionedScalar Prt("Prt", dimless, laminarTransport);
 
@@ -120,23 +120,23 @@ autoPtr<incompressible::turbulenceModel> turbulence
 // Info << "Creating and reading volumetric source terms for momentum and temperature" << endl;
 Info << "Creating and reading volumetric source terms for momentum" << endl;
 drivingForceMod<vector> momentumSourceTerm(ABLProperties, "momentum",U);
-//drivingForce<scalar> temperatureSourceTerm(ABLProperties, "temperature",T);
+drivingForce<scalar> temperatureSourceTerm(ABLProperties, "temperature",T);
 
 
 // Create and read the kinematic turbulent thermal conductivity [m2/s].
-//Info << "Creating and reading turbulent thermal conductivity field, kappat" << endl;
-//volScalarField kappat
-//(
-//    IOobject
-//    (
-//        "kappat",
-//        runTime.timeName(),
-//        mesh,
-//        IOobject::MUST_READ,
-//        IOobject::AUTO_WRITE
-//    ),
-//    mesh
-//);
+Info << "Creating and reading turbulent thermal conductivity field, kappat" << endl;
+volScalarField kappat
+(
+   IOobject
+   (
+       "kappat",
+       runTime.timeName(),
+       mesh,
+       IOobject::MUST_READ,
+       IOobject::AUTO_WRITE
+   ),
+   mesh
+);
 
 
 // Create and read the wall shear stress field [m^2/s^2].
@@ -156,19 +156,19 @@ volSymmTensorField Rwall
 
 
 // Create and read the wall temperature flux field [K-m/s].
-//Info << "Creating and reading the wall temperature flux field, qwall" << endl;
-//volVectorField qwall
-//(
-//    IOobject
-//    (
-//        "qwall",
-//        runTime.timeName(),
-//        mesh,
-//        IOobject::MUST_READ,
-//        IOobject::AUTO_WRITE
-//    ),
-//    mesh
-//);
+Info << "Creating and reading the wall temperature flux field, qwall" << endl;
+volVectorField qwall
+(
+   IOobject
+   (
+       "qwall",
+       runTime.timeName(),
+       mesh,
+       IOobject::MUST_READ,
+       IOobject::AUTO_WRITE
+   ),
+   mesh
+);
 
 
 // Create and read the density-normalied pressure field [m^2/s^2].
