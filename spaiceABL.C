@@ -124,11 +124,18 @@ int main(int argc, char *argv[])
 
                 corrIter++;
             }*/
+
+            // Get the current time step size.
+            dimensionedScalar dt = runTime.deltaT();
+
             while (pimple.correct())
             {
-                // Update the source terms.
-                momentumSourceTerm.update(pimple.finalPimpleIter());
+                // momentum predictor (using previous estimate of body force)
                 #include "UEqn.H"
+                // update body-force and velocity
+                momentumSourceTerm.update(pimple.finalPimpleIter());
+                // update corresponding flux
+                phi += dt * (momentumSourceTerm.bodyForceAdjustMent() & mesh.Sf());
 
                 #include "pEqn.H"
                 // #include "TEqn.H"
