@@ -46,6 +46,9 @@
     )
     {
         Info << "Updating scheme blending factor field" << endl;
-        #include "makeDivSchemeBlendingField.H"    
+        #include "makeDivSchemeBlendingField.H"
     }
+
+    U_0BlendingFactor = UBlendingFactor;
+    T_0BlendingFactor = TBlendingFactor;
 }

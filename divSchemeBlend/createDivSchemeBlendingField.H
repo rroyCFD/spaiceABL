@@ -14,7 +14,7 @@
         1.0
     );
 
-    surfaceScalarField& U_0BlendingFactor (UBlendingFactor);
+    surfaceScalarField U_0BlendingFactor ("U_0BlendingFactor", UBlendingFactor);
 
     Info << "Creating divergence scheme blending factor field, TBlendingFactor" << endl;
     surfaceScalarField TBlendingFactor
@@ -31,7 +31,7 @@
         1.0
     );
 
-    surfaceScalarField& T_0BlendingFactor(TBlendingFactor);
+    surfaceScalarField T_0BlendingFactor("T_0BlendingFactor", TBlendingFactor);
 
 
     // Read blending information.
