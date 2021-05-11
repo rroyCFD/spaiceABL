@@ -134,6 +134,11 @@ int main(int argc, char *argv[])
                 #include "UEqn.H"
                 // update body-force and velocity
                 momentumSourceTerm.update(pimple.finalPimpleIter());
+                // - must update boundary conditions since the surface velocity
+                // is extrapolated from owner cell and wall-nomal gradient
+                U.correctBoundaryConditions();
+                Rwall.correctBoundaryConditions();
+
                 // update corresponding flux
                 phi += dt * (momentumSourceTerm.bodyForceAdjustMent() & mesh.Sf());
 
